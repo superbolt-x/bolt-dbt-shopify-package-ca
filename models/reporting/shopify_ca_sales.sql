@@ -1,5 +1,5 @@
 {{ config (
-    alias = target.database + '_shopify_sales'
+    alias = target.database + '_shopify_ca_sales'
 )}}
 
 {%- set date_granularity_list = ['day','week','month','quarter','year'] -%}
@@ -15,7 +15,7 @@ WITH
         SUM(COALESCE(shipping_refund,0)) as shipping_refund,
         SUM(COALESCE(tax_refund,0)) as tax_refund,
         SUM(COALESCE(subtotal_refund,0)+COALESCE(shipping_refund,0)+COALESCE(tax_refund,0)) as total_refund
-    FROM {{ ref('shopify_daily_refunds') }}
+    FROM {{ ref('shopify_ca_daily_refunds') }}
     WHERE cancelled_at is null
     GROUP BY date_granularity, {{date_granularity}}
     ),
@@ -47,7 +47,7 @@ WITH
         COALESCE(SUM(subtotal_revenue+COALESCE(total_tax,0)+COALESCE(shipping_price,0)),0) as total_sales,
         COALESCE(SUM(CASE WHEN customer_order_index = 1 THEN subtotal_revenue+COALESCE(total_tax,0)+COALESCE(shipping_price,0) END),0) as first_order_total_sales,
         COALESCE(SUM(CASE WHEN customer_order_index > 1 THEN subtotal_revenue+COALESCE(total_tax,0)+COALESCE(shipping_price,0) END),0) as repeat_order_total_sales
-    FROM {{ ref('shopify_daily_sales_by_order') }}
+    FROM {{ ref('shopify_ca_daily_sales_by_order') }}
     WHERE cancelled_at is null
     GROUP BY date_granularity, {{date_granularity}})
     {%- if not loop.last %},{%- endif %}
