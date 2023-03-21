@@ -3,7 +3,7 @@
         adjustment_table_name,
         line_refund_table_name,
         transaction_table_name
-        = 'shopify_raw',
+        = 'shopify_raw_ca',
         'refund',
         'order_adjustment',
         'order_line_refund',
@@ -34,15 +34,15 @@
     "total_tax"
 ] -%}
 
-{%- set refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw%', 'refund') -%}
-{%- set adjustment_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw%', 'order_adjustment') -%}
-{%- set line_refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw%', 'order_line_refund') -%}
+{%- set refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'refund') -%}
+{%- set adjustment_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order_adjustment') -%}
+{%- set line_refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order_line_refund') -%}
 
 WITH 
     -- To tackle the signal loss between Fivetran and Shopify transformations
     stellar_signal AS 
     (SELECT _fivetran_synced
-    FROM {{ source('shopify_raw', 'order') }}
+    FROM {{ source('shopify_raw_ca', 'order') }}
     LIMIT 1
     ),
 
