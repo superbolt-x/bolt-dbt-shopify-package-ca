@@ -1,8 +1,8 @@
 version: 2
 
 sources:
-  - name: shopify_raw
-    schema: shopify_raw
+  - name: shopify_ca_raw
+    schema: shopify_ca_raw
     tables:
       - name: order
         freshness: 
@@ -25,41 +25,41 @@ sources:
       - name: customer_tag
 
 models:
-  - name: shopify_orders
+  - name: shopify_ca_orders
     columns:
       - name: unique_key
         tests:
           - unique
           - not_null
-  - name: shopify_line_items
+  - name: shopify_ca_line_items
     columns:
       - name: unique_key
         tests:
           - unique
           - not_null
-  - name: shopify_daily_sales_by_order_line_item
+  - name: shopify_ca_daily_sales_by_order_line_item
     columns:
       - name: unique_key
         tests:
           - unique
-  - name: shopify_customers
-    columns:
-      - name: unique_key
-        tests:
-          - unique
-          - not_null
-  - name: shopify_daily_sales_by_customer
-    columns:
-      - name: unique_key
-        tests:
-          - unique
-  - name: shopify_products
+  - name: shopify_ca_customers
     columns:
       - name: unique_key
         tests:
           - unique
           - not_null
-  - name: shopify_daily_sales_by_product
+  - name: shopify_ca_daily_sales_by_customer
+    columns:
+      - name: unique_key
+        tests:
+          - unique
+  - name: shopify_ca_products
+    columns:
+      - name: unique_key
+        tests:
+          - unique
+          - not_null
+  - name: shopify_ca_daily_sales_by_product
     columns: 
       - name: unique_key
         tests:
