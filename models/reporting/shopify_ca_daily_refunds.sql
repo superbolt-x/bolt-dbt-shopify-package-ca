@@ -1,7 +1,7 @@
 
 
 {{ config (
-    alias = target.database + '_shopify_daily_refunds'
+    alias = target.database + '_shopify_ca_daily_refunds'
 )}}
 
 WITH 
@@ -19,13 +19,13 @@ WITH
         end) as subtotal_refund,
         sum(shipping_refund) as shipping_refund,
         sum(tax_refund) tax_refund
-    FROM {{ ref('shopify_refunds') }}
+    FROM {{ ref('shopify_ca_refunds') }}
     GROUP BY date, refund_id, order_id
     ),
 
     order_customer AS 
     (SELECT order_id, customer_id, cancelled_at
-    FROM {{ ref('shopify_orders') }}
+    FROM {{ ref('shopify_ca_orders') }}
     )
 
 SELECT *,
