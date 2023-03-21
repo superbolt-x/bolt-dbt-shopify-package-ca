@@ -2,7 +2,7 @@
         product_table_name, 
         variant_table_name,
         tag_table_name
-        = 'shopify_raw', 'product', 'product_variant', 'product_tag'-%}
+        = 'shopify_raw_ca', 'product', 'product_variant', 'product_tag'-%}
 
 {%- set product_selected_fields = [
     "id",
@@ -23,9 +23,9 @@
     "sku"
 ] -%}
 
-{%- set product_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw%', 'product') -%}
-{%- set variant_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw%', 'product_variant') -%}
-{%- set tag_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw%', 'product_tag') -%}
+{%- set product_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'product') -%}
+{%- set variant_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'product_variant') -%}
+{%- set tag_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'product_tag') -%}
 
 WITH product_raw_data AS 
     ({{ dbt_utils.union_relations(relations = product_raw_tables) }}),
@@ -55,7 +55,7 @@ WITH product_raw_data AS
     FROM variant_raw_data
     )
 
-    {% set tag_table_exists = check_source_exists('shopify_raw','product_tag') -%}
+    {% set tag_table_exists = check_source_exists('shopify_raw_ca','product_tag') -%}
     {%- if tag_table_exists %}
     , tag_raw_data AS 
     ({{ dbt_utils.union_relations(relations = tag_raw_tables) }}),
