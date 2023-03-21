@@ -1,5 +1,5 @@
 {{ config (
-    alias = target.database + '_shopify_daily_sales_by_order_line_item',
+    alias = target.database + '_shopify_ca_daily_sales_by_order_line_item',
     materialized='incremental',
     unique_key='unique_key'
 )}}
@@ -7,22 +7,22 @@
 
 WITH orders AS 
     (SELECT *
-    FROM {{ ref('shopify_daily_sales_by_order') }}
+    FROM {{ ref('shopify_ca_daily_sales_by_order') }}
     ),
 
     line_items AS 
     (SELECT *
-    FROM {{ ref('shopify_line_items') }}
+    FROM {{ ref('shopify_ca_line_items') }}
     ),
 
     products AS 
     (SELECT product_id, variant_id, product_type, product_tags
-    FROM {{ ref('shopify_products') }}
+    FROM {{ ref('shopify_ca_products') }}
     ),
     
     customers AS 
     (SELECT customer_id, customer_acquisition_date
-    FROM {{ ref('shopify_customers') }}
+    FROM {{ ref('shopify_ca_customers') }}
     ),
 
     sales AS 
