@@ -10,17 +10,28 @@
     "status"
 ] -%}
 
+{%- set shop_selected_fields = [
+    "currency"
+] -%}
+
 {%- set schema_name,
-        table_name
-        = 'shopify_raw_ca', 'transaction' -%}
+        table_name, shop_table_name
+        = 'shopify_raw_ca', 'transaction', 'shop' -%}
 
-{%- set raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'transaction') -%}
+WITH 
+    {% if var('currency') == 'USD' -%}
+    shop_raw_data AS 
+    ({{ dbt_utils.union_relations(relations = shop_raw_tables) }}),
+        
+    currency AS
+    (SELECT date, conversion_rate
+    FROM shop_raw_data LEFT JOIN utilities.currency USING (currency)
+    WHERE date <= current_date),
+    {%- endif -%}
 
-WITH raw_data AS 
-    ({{ dbt_utils.union_relations(relations = raw_tables) }}
-    ),
+    {%- set conversion_rate = 1 if var('currency') != 'USD' else 'conversion_rate' %}
     
-    staging AS 
+    raw_table AS 
     (SELECT 
 
         {% for column in selected_fields -%}
@@ -28,19 +39,21 @@ WITH raw_data AS
         {%- if not loop.last %},{% endif %}
         {% endfor %}
 
-    FROM raw_data
-    ),
+    FROM {{ source(schema_name, table_name) }}),
 
-    transactions AS 
+    staging AS 
     (SELECT 
         order_id, 
         created_at::date as transaction_date,
-        COALESCE(SUM(CASE WHEN kind in ('sale','authorization') THEN transaction_amount END),0) as paid_by_customer,
-        COALESCE(SUM(CASE WHEN kind = 'refund' THEN transaction_amount END),0) as refunded
-    FROM staging
+        COALESCE(SUM(CASE WHEN kind in ('sale','authorization') THEN transaction_amount END),0)::float*{{ conversion_rate }}::float as paid_by_customer,
+        COALESCE(SUM(CASE WHEN kind = 'refund' THEN transaction_amount END),0)::float*{{ conversion_rate }}::float as refunded
+    FROM raw_table
+    {%- if var('currency') == 'USD' %}
+    LEFT JOIN currency ON raw_table.created_at::date = currency.date
+    {%- endif %}
     WHERE status = 'success'
     GROUP BY order_id, transaction_date)
 
 SELECT *,
     order_id||'_'||transaction_date as unique_key
-FROM transactions
+FROM staging
