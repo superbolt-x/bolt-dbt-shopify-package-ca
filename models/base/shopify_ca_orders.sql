@@ -7,7 +7,7 @@
         adjustment_table_name,
         line_refund_table_name,
         shop_table_name
-        = 'shopify_raw_eu', 
+        = 'shopify_raw_ca', 
         'order', 
         'order_discount_code', 
         'order_shipping_line',
@@ -104,14 +104,14 @@
     "currency"
 ] -%}
 
-{%- set order_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'order') -%}
-{%- set discount_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'order_discount_code') -%}
-{%- set shipping_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'order_shipping_line') -%}
-{%- set tag_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'order_tag') -%}
-{%- set refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'refund') -%}
-{%- set adjustment_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'order_adjustment') -%}
-{%- set line_refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'order_line_refund') -%}
-{%- set shop_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_eu%', 'shop') -%}
+{%- set order_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order') -%}
+{%- set discount_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order_discount_code') -%}
+{%- set shipping_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order_shipping_line') -%}
+{%- set tag_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order_tag') -%}
+{%- set refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'refund') -%}
+{%- set adjustment_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order_adjustment') -%}
+{%- set line_refund_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'order_line_refund') -%}
+{%- set shop_raw_tables = dbt_utils.get_relations_by_pattern('shopify_raw_ca%', 'shop') -%}
 
 WITH 
     {% if var('currency') == 'USD' -%}
@@ -129,7 +129,7 @@ WITH
     -- To tackle the signal loss between Fivetran and Shopify transformations
     stellar_signal AS 
     (SELECT _fivetran_synced
-    FROM {{ source('shopify_raw_eu', 'order') }}
+    FROM {{ source('shopify_raw_ca', 'order') }}
     LIMIT 1
     ),
 
